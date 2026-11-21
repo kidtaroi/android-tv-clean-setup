@@ -1,0 +1,28 @@
+# Chromecast with Google TV 4K (2020, sabrina)
+# Google TV 14 (SDK 34), build UTTC.250917.004
+#
+# Debloat only. This list does not disable the stock launcher and does not
+# disable setupwraith. Phone casting and the stock Home keep working.
+#
+# Keep on purpose: Google Assistant, TTS, Cast receiver, Android TV remote
+# service, Play Store, Play services, Gboard, Bluetooth, firmware updates.
+
+# Telemetry, feedback, and ads
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.tv.remotecontrol.logging
+com.google.android.apps.tv.netoscope
+com.google.android.federatedcompute
+com.google.android.ondevicepersonalization.services
+com.google.android.adservices.api
+com.google.android.ext.adservices.api
+
+# Preloaded apps
+com.google.android.play.games
+com.google.android.videos
+com.android.printspooler
+com.google.android.marvin.talkback
+
+# Google ambient screensaver
+com.google.android.apps.tv.dreamx
+com.google.android.backdrop

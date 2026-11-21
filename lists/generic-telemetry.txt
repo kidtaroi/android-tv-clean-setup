@@ -1,0 +1,27 @@
+# Generic Android TV / Google TV telemetry and preload list.
+#
+# This is a starting point, not a universal list. Apply it to a TV you own,
+# keep the backup, and remove any line for an app you use. The script skips
+# packages that are not installed, packages already disabled, the current Home
+# app, and its protected packages.
+
+# Telemetry, feedback, and advertising
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.tv.remotecontrol.logging
+com.google.android.apps.tv.netoscope
+com.google.android.federatedcompute
+com.google.android.ondevicepersonalization.services
+com.google.android.adservices.api
+com.google.android.ext.adservices.api
+
+# Preloaded apps that most TV users do not need
+com.google.android.play.games
+com.google.android.videos
+com.android.printspooler
+com.google.android.marvin.talkback
+
+# Google ambient screensaver. Remove these two lines if you use the stock
+# screensaver or a launcher that does not provide its own.
+com.google.android.apps.tv.dreamx
+com.google.android.backdrop
