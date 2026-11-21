@@ -1,106 +1,131 @@
-# Android TV Debloat
+# Android TV Clean Setup
 
-A single reversible script for debloating Android TV and Google TV over ADB.
+One script that gives an Android TV or Google TV a clean, Apple TV-style home screen and turns off the usual tracking and telemetry.
 
-It disables packages with `pm disable-user --user 0`. It does not uninstall anything, root the TV, or replace the launcher. A backup is written before the first change, and `--restore` re-enables the packages.
+The script:
 
-## Quick start
+1. Backs up the TV.
+2. Installs the bundled [CleanYourTV](https://github.com/Gathin23/cleanyourtv) launcher.
+3. Makes it the default Home app.
+4. Disables telemetry, feedback, ad services, and preloaded junk with `pm disable-user`.
+5. Records everything so you can undo it.
+
+Nothing is uninstalled. No root is needed.
+
+> The bundled launcher is a prebuilt CleanYourTV CI APK. Its source and hash are in [`launcher/SOURCE.md`](launcher/SOURCE.md).
+
+## Give this to your friend
+
+On the computer:
 
 ```bash
-git clone https://github.com/kidtaroi/android-tv-debloat.git
-cd android-tv-debloat
+git clone https://github.com/kidtaroi/android-tv-clean-setup.git
+cd android-tv-clean-setup
 
 export TV_HOST=192.168.1.50
-./debloat.sh --host "$TV_HOST"
+./setup.sh --host "$TV_HOST"
 ```
 
-The default list is [`lists/generic-telemetry.txt`](lists/generic-telemetry.txt). Read it first and remove any app you use.
-
-### Chromecast with Google TV 4K
-
-```bash
-./debloat.sh --host "$TV_HOST" \
-  --list lists/chromecast-gtv-4k.txt
-```
-
-This list keeps the stock launcher, setupwraith, casting, voice search, and the Android TV remote service.
-
-## Pairing
+The script asks for confirmation, then does the backup, launcher install, Home handover, and debloat.
 
 If the TV uses wireless debugging with a pairing code:
 
 ```bash
-./debloat.sh --host 192.168.1.50 \
+./setup.sh --host 192.168.1.50 \
   --pair 37123 --code 123456
 ```
 
-If the connect port is not 5555, pass it with the host:
+If the connect port is not 5555, put it in the host:
 
 ```bash
-./debloat.sh --host 192.168.1.50:39223
+./setup.sh --host 192.168.1.50:39223
+```
+
+On the TV, the friend needs to enable Developer options and wireless debugging:
+
+1. **Settings → System → About**.
+2. Click **Build** seven times.
+3. Go back to **Developer options**.
+4. Turn on **Wireless debugging** (or **Network debugging**).
+5. Keep the TV awake while the script runs.
+
+After a reboot, wireless debugging is usually off again. Turn it back on before running the script a second time.
+
+## Chromecast with Google TV 4K
+
+```bash
+./setup.sh --host "$TV_HOST" --list lists/chromecast-gtv-4k.txt
+```
+
+That list keeps casting, voice search, and the stock Home path intact. It does not disable setupwraith.
+
+## Debloat only
+
+If you want to keep the current launcher and only disable the junk:
+
+```bash
+./setup.sh --host "$TV_HOST" --debloat-only
+```
+
+Or use the shortcut:
+
+```bash
+./debloat.sh --host "$TV_HOST"
 ```
 
 ## Undo
 
 ```bash
-./debloat.sh --host "$TV_HOST" --restore
+./setup.sh --host "$TV_HOST" --restore
 ```
 
-Use a specific backup:
+The newest backup is used. To choose one:
 
 ```bash
-./debloat.sh --host "$TV_HOST" \
-  --state ~/.android-tv-debloat/20261021-201500-192.168.1.50_5555 \
+./setup.sh --host "$TV_HOST" \
+  --state ~/.android-tv-clean-setup/20261021-201500-192.168.1.50_5555 \
   --restore
 ```
 
-The backup directory contains the installed, enabled, and disabled package lists from before the change, plus `disabled-by-us.txt`. Keep it until you have reboot-tested the TV.
+The backup directory holds the installed, enabled, and disabled package lists from before the change, plus `disabled-by-us.txt` and the old Home component. Keep it until you have reboot-tested the TV.
 
-## Options
+## What is disabled
 
-```text
---host IP[:PORT]        TV address, or set TV_HOST
---serial SERIAL         Use an existing ADB serial
---pair PORT             Wireless-debugging pairing port
---code CODE             Six-digit pairing code
---list FILE             Package list
---state DIR             Backup directory to write or restore
---restore               Re-enable packages from the backup
---dry-run               Print changes without applying them
---allow-setupwraith     Allow disabling Google TV's setupwraith
---force                 Allow protected packages
-```
+The default list is [`lists/generic-telemetry.txt`](lists/generic-telemetry.txt):
 
-## What it skips
+- Feedback and telemetry
+- Advertising ID and Privacy Sandbox services
+- Federated learning and on-device personalization
+- Network diagnostics reporting
+- Preloaded games, Google TV / Play Movies, print spooler, and TalkBack
+- Google ambient screensaver
 
-The script never disables:
+The script skips:
 
-- The app that currently owns Home.
-- System UI, Settings, Shell, or the package installer.
-- Play services or the Play Store.
-- The Android TV remote service, Google Assistant, TTS, or the Cast receiver.
-- The firmware update service.
+- The app that currently owns Home
+- System UI, Settings, Shell, and the package installer
+- Play services and the Play Store
+- Google Assistant, TTS, Cast receiver, and the Android TV remote service
+- The firmware update service
 
 `com.google.android.tungsten.setupwraith` is also skipped unless you pass `--allow-setupwraith`. Disabling it can break phone casting and, on some Google TV builds, remove the saved Wi-Fi network.
 
 ## List format
 
-One package per line. Blank lines and `#` comments are ignored. A leading `package:` is accepted, so you can paste `pm list packages` output.
+One package per line. Blank lines and `#` comments are ignored. A leading `package:` is accepted.
 
 ```text
 com.google.android.feedback
 com.google.android.play.games
 ```
 
-## After a firmware update
-
-A firmware update can re-enable packages. Reconnect ADB and run the same command again:
+## Check first
 
 ```bash
-./debloat.sh --host "$TV_HOST" --list lists/chromecast-gtv-4k.txt
+./setup.sh --host "$TV_HOST" --dry-run
 ```
 
-The script skips packages that are already disabled.
+The script still connects and writes a backup, but it does not disable anything or install the launcher.
 
 ## Requirements
 
@@ -108,8 +133,8 @@ The script skips packages that are already disabled.
 - Developer options and debugging enabled on the TV.
 - The computer and TV on the same LAN.
 
-ADB over Wi-Fi does not survive a reboot on most Google TV devices. Turn wireless debugging on again when you need it, and turn it off when you finish.
+On macOS or Linux, run the script in a terminal. On Windows, use Git Bash or WSL with `adb` on the path.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+The script and documentation are MIT licensed. See [LICENSE](LICENSE). The bundled CleanYourTV APK is MIT licensed and belongs to the CleanYourTV project; see [`launcher/SOURCE.md`](launcher/SOURCE.md).
