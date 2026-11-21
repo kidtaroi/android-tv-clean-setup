@@ -22,23 +22,25 @@ On the computer:
 git clone https://github.com/kidtaroi/android-tv-clean-setup.git
 cd android-tv-clean-setup
 
-export TV_HOST=192.168.1.50
+export TV_HOST=<tv-ip>   # replace with your TV's address
 ./setup.sh --host "$TV_HOST"
 ```
+
+The tested Chromecast used `192.168.8.186`. Your TV will have a different address.
 
 The script asks for confirmation, then does the backup, launcher install, Home handover, and debloat.
 
 If the TV uses wireless debugging with a pairing code:
 
 ```bash
-./setup.sh --host 192.168.1.50 \
-  --pair 37123 --code 123456
+./setup.sh --host "$TV_HOST" \
+  --pair <pair-port> --code <pair-code>
 ```
 
 If the connect port is not 5555, put it in the host:
 
 ```bash
-./setup.sh --host 192.168.1.50:39223
+./setup.sh --host <tv-ip>:<connect-port>
 ```
 
 On the TV, the friend needs to enable Developer options and wireless debugging:
@@ -83,7 +85,7 @@ The newest backup is used. To choose one:
 
 ```bash
 ./setup.sh --host "$TV_HOST" \
-  --state ~/.android-tv-clean-setup/20261021-201500-192.168.1.50_5555 \
+  --state ~/.android-tv-clean-setup/20261021-201500-<tv-ip>_5555 \
   --restore
 ```
 

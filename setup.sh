@@ -58,11 +58,11 @@ usage() {
 Android TV clean setup: launcher + debloat
 
 Usage:
-  ./setup.sh --host 192.168.1.50
-  ./setup.sh --host 192.168.1.50 --list lists/chromecast-gtv-4k.txt
-  ./setup.sh --host 192.168.1.50 --debloat-only
-  ./setup.sh --host 192.168.1.50 --restore
-  ./setup.sh --host 192.168.1.50 --dry-run
+  ./setup.sh --host <tv-ip>
+  ./setup.sh --host <tv-ip> --list lists/chromecast-gtv-4k.txt
+  ./setup.sh --host <tv-ip> --debloat-only
+  ./setup.sh --host <tv-ip> --restore
+  ./setup.sh --host <tv-ip> --dry-run
 
 With no command, setup.sh backs up the TV, installs the bundled CleanYourTV
 launcher, makes it Home, applies a debloat list, and verifies the result.
